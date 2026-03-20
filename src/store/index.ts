@@ -1,91 +1,89 @@
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-import type { PostFilters } from "@/types";
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+import type { PostFilters } from '@/types'
 
 // ─── UI / Filter State ───────────────────────────────────────────────────────
 
 interface FilterState {
-  filters: PostFilters;
-  setFilter: <K extends keyof PostFilters>(key: K, value: PostFilters[K]) => void;
-  resetFilters: () => void;
+  filters: PostFilters
+  setFilter: <K extends keyof PostFilters>(key: K, value: PostFilters[K]) => void
+  resetFilters: () => void
 }
 
 const defaultFilters: PostFilters = {
-  search: "",
-  tag: "",
-  sortBy: "createdAt",
-  sortOrder: "desc",
-};
+  search: '',
+  tag: '',
+  sortBy: 'createdAt',
+  sortOrder: 'desc'
+}
 
 export const useFilterStore = create<FilterState>()(
   devtools(
-    (set) => ({
+    set => ({
       filters: defaultFilters,
       setFilter: (key, value) =>
-        set((state) => ({
-          filters: { ...state.filters, [key]: value },
+        set(state => ({
+          filters: { ...state.filters, [key]: value }
         })),
-      resetFilters: () => set({ filters: defaultFilters }),
+      resetFilters: () => set({ filters: defaultFilters })
     }),
-    { name: "filter-store" }
+    { name: 'filter-store' }
   )
-);
+)
 
 // ─── Modal / Dialog State ─────────────────────────────────────────────────────
 
-type ModalType = "create" | "edit" | "delete" | null;
+type ModalType = 'create' | 'edit' | 'delete' | null
 
 interface ModalState {
-  modalType: ModalType;
-  targetPostId: string | null;
-  openModal: (type: Exclude<ModalType, null>, postId?: string) => void;
-  closeModal: () => void;
+  modalType: ModalType
+  targetPostId: string | null
+  openModal: (type: Exclude<ModalType, null>, postId?: string) => void
+  closeModal: () => void
 }
 
 export const useModalStore = create<ModalState>()(
   devtools(
-    (set) => ({
+    set => ({
       modalType: null,
-      targetPostId: null,
-      openModal: (type, postId = null) =>
-        set({ modalType: type, targetPostId: postId }),
-      closeModal: () => set({ modalType: null, targetPostId: null }),
+      targetPostId: undefined,
+      openModal: (type, postId = undefined) => set({ modalType: type, targetPostId: postId }),
+      closeModal: () => set({ modalType: null, targetPostId: null })
     }),
-    { name: "modal-store" }
+    { name: 'modal-store' }
   )
-);
+)
 
 // ─── Notification / Toast State ───────────────────────────────────────────────
 
-type ToastKind = "success" | "error" | "info";
+type ToastKind = 'success' | 'error' | 'info'
 
 interface Toast {
-  id: string;
-  kind: ToastKind;
-  message: string;
+  id: string
+  kind: ToastKind
+  message: string
 }
 
 interface ToastState {
-  toasts: Toast[];
-  addToast: (kind: ToastKind, message: string) => void;
-  removeToast: (id: string) => void;
+  toasts: Toast[]
+  addToast: (kind: ToastKind, message: string) => void
+  removeToast: (id: string) => void
 }
 
 export const useToastStore = create<ToastState>()(
   devtools(
-    (set) => ({
+    set => ({
       toasts: [],
       addToast: (kind, message) => {
-        const id = `${Date.now()}-${Math.random()}`;
-        set((state) => ({ toasts: [...state.toasts, { id, kind, message }] }));
+        const id = `${Date.now()}-${Math.random()}`
+        set(state => ({ toasts: [...state.toasts, { id, kind, message }] }))
         // Auto-remove after 4s
         setTimeout(() => {
-          set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
-        }, 4000);
+          set(state => ({ toasts: state.toasts.filter(t => t.id !== id) }))
+        }, 4000)
       },
-      removeToast: (id) =>
-        set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
+      removeToast: id => set(state => ({ toasts: state.toasts.filter(t => t.id !== id) }))
     }),
-    { name: "toast-store" }
+    { name: 'toast-store' }
   )
-);
+)
