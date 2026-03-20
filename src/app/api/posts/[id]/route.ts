@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { fetchPostById, updatePost, deletePost } from '@/lib/firestore'
 import { postSchema } from '@/schemas'
 import { z, ZodError } from 'zod'
+import { revalidatePath } from 'next/cache'
 
 const postServerSchema = postSchema.extend({
   tags: z.union([
@@ -37,6 +38,7 @@ export async function PATCH (request: Request, { params }: Params) {
     const body = await request.json()
     const validated = postServerSchema.partial().parse(body)
     const post = await updatePost(id, validated)
+    revalidatePath('/')
     return NextResponse.json(post)
   } catch (error) {
     if (error instanceof ZodError) {
