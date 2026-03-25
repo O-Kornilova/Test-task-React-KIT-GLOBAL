@@ -46,8 +46,8 @@ export const useModalStore = create<ModalState>()(
   devtools(
     set => ({
       modalType: null,
-      targetPostId: undefined,
-      openModal: (type, postId = undefined) => set({ modalType: type, targetPostId: postId }),
+      targetPostId: null,
+      openModal: (type, postId = null) => set({ modalType: type, targetPostId: postId ?? null }),
       closeModal: () => set({ modalType: null, targetPostId: null })
     }),
     { name: 'modal-store' }
